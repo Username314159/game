@@ -1,1 +1,156 @@
-# game
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Model Game</title>
+        <style>
+            body {
+                background-color:rgb(107, 114, 233);
+                border: 5px solid rgb(62, 40, 142);
+                margin: 0px;
+                padding: 60px;
+            }
+            canvas {
+                border: 5px solid grey;
+                background-color:aliceblue;
+            }
+            .special {background-color:rgb(200, 124, 200);
+                      font-size:20px;
+                      border: 2px solid black;
+                      padding: 10px;
+                      margin:10px;
+                      color:antiquewhite;
+                      cursor: pointer;
+                      box-shadow: 0 3px 5px rgb(66, 58, 51);}
+            .special:active {transform: translateY(2px);
+                             box-shadow:none;}
+        </style>
+    
+    </head>
+    <body>
+
+    <br>
+    <div style = "text-align:center;">
+    
+        <button type = "button" class = "special" onclick = start()>Start</button>
+        <button type = "button" class = "special" onclick = end()>End</button><br><br>
+
+        <canvas id = "myScreen" width = "1000" height = "600"></canvas>
+        
+    </div>
+    
+
+    <script>
+
+        var begin = false;
+        let ballx;
+        let bally;
+        let ballr = 20;
+        let gravity = 0.5;
+        let vy = 0;
+        let vx = 0;
+        var canvasScreen = document.getElementById("myScreen");
+        var screen = canvasScreen.getContext("2d");
+
+        var Screenbg = screen.createRadialGradient(450,300,800,450,300,450);
+        Screenbg.addColorStop(0,"grey");
+        Screenbg.addColorStop(1,"black");
+        screen.fillStyle = Screenbg;
+        screen.fillRect(0,0,1000,600);
+
+        function start(){
+            if(!begin){
+                screen.clearRect(0,0,1000,600);
+                bally = 300;
+                ballx = 500;
+                begin = true;
+                branch();
+            }
+        }
+
+        function end() {
+            begin = false;
+            cancelAnimationFrame(animationId);
+            screen.clearRect(0,0,1000,600);
+            screen.fillStyle = Screenbg;
+            screen.fillRect(0,0,1000,600);
+            alert("You ended the game.")
+        }
+        
+        function branch() {
+            player();
+            update();
+        }
+
+        //clearRect(position x, position y, width, height);
+        function player() {
+            screen.clearRect(ballx - ballr - 10, bally - ballr - 10, 3*ballr, 3*ballr);
+            screen.beginPath();
+            screen.arc(ballx, bally, ballr, 0, Math.PI*2);
+            screen.fillStyle = "red";
+            screen.fill();
+            screen.closePath();
+        }
+        function update() {
+            vy += gravity;
+            bally += vy;
+            ballx += vx;
+            if (bally + ballr > canvasScreen.height) {
+                bally = canvasScreen.height - ballr;
+                vy = 0; 
+            }
+            if (bally - ballr < 0) {
+                bally = ballr;
+                vy = 0; 
+            }
+
+            if (ballx + ballr > canvasScreen.width) {
+                ballx = canvasScreen.width - ballr;
+                vx = 0; 
+            }
+            if (ballx - ballr < 0) {
+                ballx = ballr;
+                vx = 0; 
+            }
+            if (vx > 6){
+                vx = 6;
+            }
+            if (vx < -6){
+                vx = -6;
+            }
+
+
+            screen.clearRect(0,0,1000,600);
+            player(); 
+
+            if(begin){
+                animationId = requestAnimationFrame(update);
+            }
+        }
+        
+
+        
+        document.addEventListener('keydown', function(event) {
+        if(begin){    
+            const speed = 10; 
+            if(bally + ballr >= canvasScreen.height || ballx + ballr >= canvasScreen.width
+                || ballx - ballr <= 0){
+                if(event.key === "ArrowUp") vy -= speed;
+                }
+
+            if(event.key === "ArrowDown") vy += speed;
+            if(event.key === "ArrowLeft") vx -= 3;
+            if(event.key === "ArrowRight") vx += 3;
+            if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)) {
+                event.preventDefault(); 
+            }
+            
+            player(); 
+            }
+        });
+    
+    </script>
+        
+    </body>
+    </html>
